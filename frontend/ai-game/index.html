@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>编程马拉松-算法演示</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      *{padding: 0; margin: 0;}
+      .wrap {
+        width: 600px;
+        margin: 0 auto;
+      }
+      .input-box{
+        padding: 20px 0 0;
+      }
+      .input-box__input{
+        display: inline-block;
+        height: 27px;
+        text-indent: 10px;
+        width: 280px;
+      }
+      .input-box__submit{
+        vertical-align: middle;
+        display: inline-block;
+        width: 60px;
+        height: 27px;
+        line-height: 27px;
+        background: #02c3fd;
+        border-radius: 4px;
+        cursor: pointer;
+        color: #fff;
+        text-align: center;
+        font-size: 12px;
+      }
+      .info{
+        width: 100%;
+        text-align: right;
+        line-height: 2;
+        padding: 20px 0 0;
+        font-size: 16px;
+        overflow: hidden;
+      }
+      .info__score{
+        float: left;
+      }
+      .info__score-num{
+        color: #ff0000;
+      }
+      .info__check-rank {
+        color: #08a5ee;
+        text-decoration: none;
+      }
+      .info__check-rank:hover{
+        text-decoration: underline;
+      }
+      .info__check-rank:visited{
+        color: #08a5ee;
+        text-decoration: none;
+      }
+      .ai-stage{
+        display: block;
+        margin: 20px auto 0;
+        box-shadow: 0 0 2px rgba(0, 0, 0, .6)
+      }
+    </style>
+  </head>
+  <body>
+    <!--[if lt IE 7]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    <div class="wrap">
+      <div class="input-box">
+        <select name="type" id="replayType">
+          <option value="competition" selected>competition</option>
+          <option value="benchmark">benchmark</option>
+          <option value="test">test</option>
+        </select>
+        <input type="text" class="input-box__input" id="inputId">
+        <span class="input-box__submit" id="startBtn">开始演示</span>
+      </div>
+      <div class="info">
+        <div class="info__score">
+          得分：<span class="info__score-num" id="scoreNum">0</span>
+        </div>
+        <a class="info__check-rank" target="_blank" href="./rank.html">排行榜</a>
+      </div>
+      <canvas id="stage" width="600" height="600" class="ai-stage"></canvas>
+    </div>
+    <script src="./dist/bundle-app.js"></script>
+  </body>
+</html>

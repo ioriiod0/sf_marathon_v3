@@ -1,0 +1,16 @@
+
+backend:
+  image: marathon
+  # restart: always
+  hostname: server
+
+frontend:
+  image: frontend
+  # build: ./nginx
+  container_name: frontend
+  restart: always
+  hostname: frontend1
+  links:
+    - backend
+  ports:
+    - "5555:80"
