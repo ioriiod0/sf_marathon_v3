@@ -13,5 +13,5 @@ ENV_CONF = {
 }
 
 REPLAY_DIR = "/replays"
-TIMEOUT = 2
+TIMEOUT = 1.5
 RETRY = 20

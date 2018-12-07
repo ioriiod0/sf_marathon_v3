@@ -31,6 +31,7 @@
     cd 到项目根目录
     docker-compose build
     docker-compose up
+    web ui:  localhost:5555
 
 
 #### 创建比赛
