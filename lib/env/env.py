@@ -80,7 +80,7 @@ class Env(object):
 		for xx in l:
 			x = xx // world_size
 			y = xx % world_size
-			if self.jobs[x][y] != 0 or self.walls[x][y] != 0 or (x,y) in ((self.player1.x,self.player1.y),(self.player2.x,self.player2.y)):
+			if self.jobs[x][y] != 0 or self.walls[x][y] != 0 or (x,y) in ((self.player1.x,self.player1.y),(self.player2.x,self.player2.y),(self.player1.home_x,self.player1.home_y),(self.player2.home_x,self.player2.home_y)):
 				continue
 			v = gen_value()
 			self.jobs[x][y] = v
