@@ -3,7 +3,7 @@
 ### 比赛规则概述
 
 <div align="center" style="padding-top:20px;padding-bottom:20px">
-<img src="./xxx.jpg" width = "300" height = "300" alt="图片名称" align=center />
+<img src="./xxx.jpg" width = "400" height = "400" alt="图片名称" align=center />
 </div>
 
  在去年比赛的基础上引入对抗机制，同时规则出现一些新的变化

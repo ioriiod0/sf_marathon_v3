@@ -69,7 +69,6 @@ Content-Type: application/json
 ```
 
 
-
 ### END:
 用于通知ai比赛开始
 
