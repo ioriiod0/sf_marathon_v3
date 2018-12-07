@@ -25,7 +25,7 @@
         width: 280px;
       }
       .input-box__submit{
-        vertical-align: middle;
+        vertical-align: middle;        
         display: inline-block;
         width: 60px;
         height: 27px;
@@ -39,7 +39,7 @@
       }
       .info{
         width: 100%;
-        text-align: right;
+        text-align: left;
         line-height: 2;
         padding: 20px 0 0;
         font-size: 16px;
@@ -47,6 +47,7 @@
       }
       .info__score{
         float: left;
+        width: 160px;
       }
       .info__score-num{
         color: #ff0000;
@@ -75,19 +76,31 @@
     <![endif]-->
     <div class="wrap">
       <div class="input-box">
-        <select name="type" id="replayType">
-          <option value="competition" selected>competition</option>
-          <option value="benchmark">benchmark</option>
-          <option value="test">test</option>
-        </select>
         <input type="text" class="input-box__input" id="inputId">
         <span class="input-box__submit" id="startBtn">开始演示</span>
       </div>
       <div class="info">
         <div class="info__score">
-          得分：<span class="info__score-num" id="scoreNum">0</span>
+          Player1 得分：<span class="info__score-num" id="scoreNum1">0</span>
         </div>
-        <a class="info__check-rank" target="_blank" href="./rank.html">排行榜</a>
+        <div class="info__score">
+          背包包裹数：<span class="info__score-num" id="packageNum1">0</span>
+        </div>
+        <div class="info__score">
+          背包价值：<span class="info__score-num" id="values1">0</span>
+        </div>
+        <a class="info__check-rank" target="_blank" href="./benchmark.html">排行榜</a>
+      </div>
+      <div class="info">
+        <div class="info__score">
+          Player2 得分：<span class="info__score-num" id="scoreNum2">0</span>
+        </div>
+        <div class="info__score">
+          背包包裹数：<span class="info__score-num" id="packageNum2">0</span>
+        </div>
+        <div class="info__score">
+          背包价值：<span class="info__score-num" id="values2">0</span>
+        </div>
       </div>
       <canvas id="stage" width="600" height="600" class="ai-stage"></canvas>
     </div>

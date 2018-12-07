@@ -1,16 +1,34 @@
 
 backend:
-  image: marathon
+  # image: marathon
+  build: .
   # restart: always
-  hostname: server
+  hostname: bankend
+  container_name: bankend
+  links:
+    - test1
+    - test2
 
 frontend:
-  image: frontend
-  # build: ./nginx
+  build: ./frontend
   container_name: frontend
   restart: always
-  hostname: frontend1
+  hostname: frontend
   links:
     - backend
   ports:
     - "5555:80"
+
+  
+test1:
+  build: .
+  command: python bin/test_server.py 1000
+  container_name: test1
+  hostname: test1
+
+test2:
+  build: .
+  command: python bin/test_server.py 1023
+  container_name: test2
+  hostname: test2
+

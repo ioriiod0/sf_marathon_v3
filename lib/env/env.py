@@ -1,49 +1,86 @@
 # -*- coding: utf-8 -*-
 # @Author: ioriiod0
 # @Date:   2017-11-01 14:44:26
-# @Last Modified by:   ioriiod0
-# @Last Modified time: 2017-11-16 15:10:41
+# @Last modified by:   ioriiod0
+# @Last modified time: 2017-12-05T16:30:55+08:00
 
 import sys
-import numpy as np
 import time
 import random
+import copy
+import numpy as np
+
+
+class Player(object):
+	def __init__(self,name,home,n_jobs,value,score):
+		super(Player,self).__init__()
+		self.name = name
+		self.x = home[0]
+		self.y = home[1]
+		self.home_x = home[0]
+		self.home_y = home[1]
+		self.n_jobs = n_jobs
+		self.value = value
+		self.score = score
+
+
+	def __str__(self):
+		return str(self.__dict__)
+		
+	__repr__ = __str__
 
 class Env(object):
 	"""docstring for Env"""
-	def __init__(self,_id,owner,world_size,num_jobs,value_range,max_steps,rand):
+	def __init__(self,name,p1_name,p2_name,conf,rand):
 		super(Env, self).__init__()
-		self.world_size = world_size
-		self.num_jobs = num_jobs
-		self.max_steps = max_steps
-		self.value_range = value_range
-		self._id = _id
-		self.owner = owner
+		self.conf = conf
+		self.name = name
 		self.rand = rand
-		self.benchmark = False
+		self.stopped = False
+		self.done = False
+		self.create_at = time.time()
+
+		self.player1 = Player(p1_name,self.conf['player1_home'],0,0,0)
+		self.player2 = Player(p2_name,self.conf['player2_home'],0,0,0)
+		self.current_player = self.player1
+
 
 	def _gen_world(self):
-		self.jobs = np.zeros((self.world_size,self.world_size))
-		self.coord = (0,0)
+		world_size = self.conf['world_size']
+		self.jobs = np.zeros((world_size,world_size))
 
 	def _gen_wall(self):
-		self.walls = np.zeros((self.world_size,self.world_size))
-		self.wall_indexes = [(1,2),(2,3),(4,3),(4,4),(9,6),(8,6),
-								(6,5),(6,8),(6,9),(3,9),(2,9),(2,10),(9,2),(8,2)]
-		for x,y in self.wall_indexes:
+		world_size = self.conf['world_size']
+		num_walls = self.conf['num_walls']
+		self.walls = np.zeros((world_size,world_size))
+		l = list(range(world_size*world_size))
+		self.rand.shuffle(l)
+		
+		i = 0
+		for xx in l:
+			x = xx // world_size
+			y = xx % world_size
+			if (x,y) in ((self.player1.x,self.player1.y),(self.player2.x,self.player2.y),(self.player1.home_x,self.player1.home_y),(self.player2.home_x,self.player2.home_y)):
+				continue
 			self.walls[x][y] = 1
+			i += 1
+			if i == num_walls:
+				break
 
 
 	def _gen_job(self,n,gen_value):
 		if n <= 0:
 			return
-		l = list(range(self.world_size*self.world_size))
+		world_size = self.conf['world_size']
+
+		l = list(range(world_size*world_size))
 		self.rand.shuffle(l)
+
 		i = 0
 		for xx in l:
-			x = xx % self.world_size
-			y = xx / self.world_size
-			if self.jobs[x][y] != 0 or self.walls[x][y] != 0 or (x,y) == self.coord:
+			x = xx // world_size
+			y = xx % world_size
+			if self.jobs[x][y] != 0 or self.walls[x][y] != 0 or (x,y) in ((self.player1.x,self.player1.y),(self.player2.x,self.player2.y)):
 				continue
 			v = gen_value()
 			self.jobs[x][y] = v
@@ -57,102 +94,173 @@ class Env(object):
 		self.score_gened = 0
 		self._gen_world()
 		self._gen_wall()
-		self._gen_job(self.num_jobs,lambda : self.rand.randint(*self.value_range))
+		self._gen_job(self.conf['num_jobs'],lambda : self.rand.randint(*self.conf['value_range']))
 		self.score = 0
 		self.steps = 0
 		self.replay = []
-		self.timestamp = time.time()
-		self.first_time = self.timestamp
 		return self.get_state()
 
 
 	def get_state(self):
-		ai = {"x": self.coord[0],"y": self.coord[1]}
-		walls = [ {"x":x,"y":y} for x,y in self.wall_indexes]
+		world_size = self.conf['world_size']
+		p1 = self.player1
+		p2 = self.player2
+		player1 = copy.deepcopy(p1.__dict__)
+		player2 = copy.deepcopy(p2.__dict__)
+
+		walls = []
 		jobs = []
-		for x in range(self.world_size):
-			for y in range(self.world_size):
+		for x in range(world_size):
+			for y in range(world_size):
 				if self.jobs[x][y] > 0:
 					jobs.append({
 						"x":x,
 						"y":y,
 						"value":self.jobs[x][y],
 					})
+
+				if self.walls[x][y] > 0:
+					walls.append({"x":x,"y":y})
+
 		ret = {
-			"ai": ai,
+			"player1": player1,
+			"player2": player2,
 			"walls": walls,
 			"jobs": jobs,
-			"score": self.score,
 		}
 		self.replay.append(ret)
 		return ret
 
-	def step(self,action):
-		self.timestamp = time.time()
-		self.steps += 1
-		done = (self.steps == self.max_steps)
+	def _move(self,action):
+		p = self.current_player
+		o = self.player1 if self.current_player is self.player2 else self.player2
+
+		world_size = self.conf['world_size']
+
 		if action in (0,"U"):
-			x,y = self.coord[0]-1,self.coord[1]
+			x,y = p.x-1,p.y
 		elif action in (1,"D"):
-			x,y = self.coord[0]+1,self.coord[1]
+			x,y = p.x+1,p.y
 		elif action in (2,"L"):
-			x,y = self.coord[0],self.coord[1]-1
+			x,y = p.x,p.y-1
 		elif action in (3,"R"):
-			x,y = self.coord[0],self.coord[1]+1
+			x,y = p.x,p.y+1
+		else: #stay..
+			x,y = p.x,p.y
+
+		valid = (0 <= x < world_size) and (0 <= y < world_size) and (self.walls[x][y] == 0) and (x,y) not in ((o.x,o.y),(o.home_x,o.home_y))
+
+		if valid:
+			p.x = x
+			p.y = y
+
+		return p
+
+	def _pickup(self):
+		p = self.current_player
+		if self.jobs[p.x][p.y] > 0 and p.n_jobs < self.conf['capacity']:
+			p.n_jobs += 1
+			p.value += self.jobs[p.x][p.y]
+			self.jobs[p.x][p.y] = 0
+	
+	def _delivery(self):
+		p = self.current_player
+		if (p.x,p.y) == (p.home_x,p.home_y):
+			p.n_jobs = 0
+			p.score += p.value
+			p.value = 0
+
+	def _switch_player(self):
+		if self.current_player is self.player1:
+			self.current_player = self.player2
+		elif self.current_player is self.player2:
+			self.current_player = self.player1
 		else:
-			raise Exception("invalid action")
+			raise Exception("should not happened!!")
+		
+	def step(self,p_name,action):
+		assert self.current_player.name == p_name
+		
+		self._move(action)
+		self._pickup()
+		self._delivery()
+		self._switch_player()
+		self.steps += 1
 
-		self.jobs = np.clip(self.jobs - 1,0,float("inf"))
-		valid = (0 <= x < self.world_size) and (0 <= y < self.world_size) and (self.walls[x][y] == 0)
-
-		if not valid:
-			reward = 0
-		else:
-			self.coord = (x,y)
-			reward = self.jobs[x][y]
-			if reward > 0:
-				self.score += reward
-			self.jobs[x][y] = 0
-
+		self.done = done = (self.steps == self.conf['max_steps']*2)
 		existing = self.jobs[self.jobs > 0].size
-		delta = self.num_jobs - existing
-		for i in range(delta):
-			if self.rand.random() < 0.5:
-				self._gen_job(2,lambda : self.rand.randint(*self.value_range))
-		if done:
-			self.duration = self.timestamp - self.first_time
+		delta = self.conf['num_jobs'] - existing
+		self._gen_job(delta,lambda : self.rand.randint(*self.conf['value_range']))
 
-		return self.get_state(),action,reward,done
+		return self.get_state()
 
 
 	def render(self):
-		for i in range(self.world_size):
-			for j in range(self.world_size):
+		world_size = self.conf['world_size']
+		for i in range(world_size):
+			for j in range(world_size):
 				if j == 0:
 					sys.stdout.write("|")
 				if self.jobs[i][j] > 0:
 					sys.stdout.write("%02d|" % self.jobs[i][j])
 				elif self.walls[i][j] > 0:
 					sys.stdout.write("x |")
-				elif self.coord == (i,j):
+				elif (self.player1.x,self.player1.y) == (i,j):
 					sys.stdout.write("* |")
+				elif (self.player2.x,self.player2.y) == (i,j):
+					sys.stdout.write("@ |")
+				elif (self.player1.home_x,self.player1.home_y) == (i,j):
+					sys.stdout.write("H |")
+				elif (self.player2.home_x,self.player2.home_y) == (i,j):
+					sys.stdout.write("M |")
 				else:
 					sys.stdout.write("  |")
 			sys.stdout.write("\r\n")
+		print ('================')
 
 
 if __name__ == '__main__':
-	env = Env("a","b",12,18,(18,36),288,random.Random(10))
+	conf = {
+		'world_size': 12,
+		'capacity': 10,
+		'player1_home': (5,5),
+		'player2_home': (6,6),
+		'num_walls': 3,
+		'num_jobs': 4,
+		'value_range': (6,12),
+		'max_steps': 200
+	}
+	# p1_actions = ['D','D','L','R','U','L','L','U']
+	# p2_actions = ['D','D','U','R','L','R','U','D','D']
+	p1_actions = ['D','R','R','D','R','D','D','D']
+	p2_actions = ['S','U','U','L','U','U']
+	env = Env("","p1","p2",conf,random.Random(10))
 	env.reset()
 	env.render()
 	while True:
-		action = np.random.choice(["U","D","L","R"])
-		print "coord before:", env.coord,"action:",action
-		state,action,reward,done = env.step(action)
-		print "coord after:", env.coord,"reward:",reward
-		print "coord ai:",env.coord
+		if p1_actions:
+			action1 = p1_actions[0] #np.random.choice(["U","D","L","R"])
+			p1_actions = p1_actions[1:]
+		else:
+			action1 = 'S'
+
+		if p2_actions:
+			action2 = p2_actions[0] #np.random.choice(["U","D","L","R"])
+			p2_actions = p2_actions[1:]
+		else:
+			action2 = 'S'
+		# action2 = 'S'#np.random.choice(["U","D","L","R"])
+		print ('P1:',action1)
+		state = env.step("p1",action1)
 		env.render()
-		if done:
+		print ('P2:',action2)
+		state = env.step("p2",action2)
+		env.render()
+
+		print ("coord after:", env.player1,env.player2)
+		print ("coord ai:",env.player1,env.player2)
+		
+		if env.done:
 			break
-		time.sleep(3)
+		time.sleep(0.3)
 	# env.step()

@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 43);
+/******/ 	return __webpack_require__(__webpack_require__.s = 41);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -943,11 +943,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = {
-  manifest: [{ id: 'person', src: '/images/person.png' }, { id: 'package', src: '/images/package.png' }, { id: 'wall', src: '/images/wall.png' }],
+  manifest: [{ id: 'person1', src: '/images/person1.png' }, { id: 'person2', src: '/images/person2.png' }, { id: 'package', src: '/images/package.png' }, { id: 'wall', src: '/images/wall.png' }],
   rest: {
-    'competition': '/competition',
-    'data': '/${type}/replays/',
-    'benchmark': '/benchmark'
+    'competition': '/competitions'
   }
 };
 
@@ -1842,7 +1840,18 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-/* 28 */
+/* 28 */,
+/* 29 */,
+/* 30 */,
+/* 31 */,
+/* 32 */,
+/* 33 */,
+/* 34 */,
+/* 35 */,
+/* 36 */,
+/* 37 */,
+/* 38 */,
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1867,21 +1876,8 @@ function createItems(data, type) {
 }
 
 /***/ }),
-/* 29 */,
-/* 30 */,
-/* 31 */,
-/* 32 */,
-/* 33 */,
-/* 34 */,
-/* 35 */,
-/* 36 */,
-/* 37 */,
-/* 38 */,
-/* 39 */,
 /* 40 */,
-/* 41 */,
-/* 42 */,
-/* 43 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1895,7 +1891,7 @@ var _axios = __webpack_require__(9);
 
 var _axios2 = _interopRequireDefault(_axios);
 
-var _createRankItem = __webpack_require__(28);
+var _createRankItem = __webpack_require__(39);
 
 var _createRankItem2 = _interopRequireDefault(_createRankItem);
 

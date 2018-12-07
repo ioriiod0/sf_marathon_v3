@@ -3,7 +3,8 @@ module.exports = {
   entry: {
     app: path.join(__dirname, 'app', 'index'),
     competition: path.join(__dirname, 'app', 'competition'),
-    benchmark: path.join(__dirname, 'app', 'benchmark')
+    benchmark: path.join(__dirname, 'app', 'benchmark'),
+    hand: path.join(__dirname, 'app', 'manual')
   },
   output: {
     filename: 'bundle-[name].js',

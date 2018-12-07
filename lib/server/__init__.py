@@ -1,8 +1,10 @@
 
-from flask import Flask
+from sanic import Sanic
 
+app = Sanic()
+import server.config
 
-app = Flask(__name__)
-app.config.from_object("server.config")
+app.config.from_object(server.config)
 
-import views
+import server.views
+ 

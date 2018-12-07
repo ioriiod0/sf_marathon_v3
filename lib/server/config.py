@@ -1,11 +1,17 @@
 SECRET_KEY = '*&GJD%KDjy'
 DEBUG = True
 
-WORLD_SIZE = 12
-VALUE_RANGE = (18,48)
-MAX_STEPS = 400
-NUM_JOBS = 24
+ENV_CONF = {
+    'world_size': 12,
+    'capacity': 10,
+	'player1_home': (5,5),
+	'player2_home': (6,6),
+    'num_walls': 24,
+    'num_jobs': 24,
+    'value_range': (6,12),
+    'max_steps': 200
+}
 
-SEED = 19860910
 REPLAY_DIR = "/replays"
-TIME_OUT = 1000
+TIMEOUT = 2
+RETRY = 20
