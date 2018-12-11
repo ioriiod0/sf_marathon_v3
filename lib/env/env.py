@@ -163,7 +163,7 @@ class Env(object):
 		else: #stay..
 			x,y = p.x,p.y
 
-		valid = (0 <= x < world_size) and (0 <= y < world_size) and (self.walls[x][y] == 0) and (x,y) not in ((o.x,o.y),(o.home_x,o.home_y))
+		valid = (0 <= x < world_size) and (0 <= y < world_size) and (self.walls[x][y] == 0) and (x,y) != (o.home_x,o.home_y)
 
 		if valid:
 			p.x = x
