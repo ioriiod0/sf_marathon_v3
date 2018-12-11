@@ -23,6 +23,12 @@ class Player(object):
 		self.value = value
 		self.score = score
 
+	def reset(self):
+		self.x = self.home_x
+		self.y = self.home_y
+		self.n_jobs = 0
+		self.value = 0
+		self.score = 0
 
 	def __str__(self):
 		return str(self.__dict__)
@@ -95,6 +101,8 @@ class Env(object):
 		self._gen_world()
 		self._gen_wall()
 		self._gen_job(self.conf['num_jobs'],lambda : self.rand.randint(*self.conf['value_range']))
+		self.player1.reset()
+		self.player2.reset()
 		self.score = 0
 		self.steps = 0
 		self.replay = []
@@ -225,8 +233,8 @@ if __name__ == '__main__':
 		'capacity': 10,
 		'player1_home': (5,5),
 		'player2_home': (6,6),
-		'num_walls': 3,
-		'num_jobs': 4,
+		'num_walls': 24,
+		'num_jobs': 24,
 		'value_range': (6,12),
 		'max_steps': 200
 	}
@@ -234,7 +242,7 @@ if __name__ == '__main__':
 	# p2_actions = ['D','D','U','R','L','R','U','D','D']
 	p1_actions = ['D','R','R','D','R','D','D','D']
 	p2_actions = ['S','U','U','L','U','U']
-	env = Env("","p1","p2",conf,random.Random(10))
+	env = Env("","p1","p2",conf,random.Random(20))
 	env.reset()
 	env.render()
 	while True:
@@ -262,5 +270,5 @@ if __name__ == '__main__':
 		
 		if env.done:
 			break
-		time.sleep(0.3)
+		time.sleep(0.1)
 	# env.step()
