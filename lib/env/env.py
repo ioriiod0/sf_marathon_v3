@@ -45,10 +45,14 @@ class Env(object):
 		self.stopped = False
 		self.done = False
 		self.create_at = time.time()
+		self.score = 0
+		self.steps = 0
+		self.replay = []
 
 		self.player1 = Player(p1_name,self.conf['player1_home'],0,0,0)
 		self.player2 = Player(p2_name,self.conf['player2_home'],0,0,0)
 		self.current_player = self.player1
+
 
 
 	def _gen_world(self):
@@ -101,11 +105,14 @@ class Env(object):
 		self._gen_world()
 		self._gen_wall()
 		self._gen_job(self.conf['num_jobs'],lambda : self.rand.randint(*self.conf['value_range']))
-		self.player1.reset()
-		self.player2.reset()
+		self.stopped = False
+		self.done = False
 		self.score = 0
 		self.steps = 0
 		self.replay = []
+		self.player1.reset()
+		self.player2.reset()
+		self.current_player = self.player1
 		return self.get_state()
 
 
